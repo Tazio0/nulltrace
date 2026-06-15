@@ -1,3 +1,4 @@
+
 from abc import ABC, abstractmethod
 
 class BaseIngestor(ABC):
@@ -7,13 +8,13 @@ class BaseIngestor(ABC):
         self.base_url = base_url
         self.api_key = api_key
 
-        @abstractmethod
-        def fetch(self):
-            pass
+    @abstractmethod
+    def fetch(self):
+        pass
 
-        @abstractmethod
-        def parse(self, raw_data):
-            pass
+    @abstractmethod
+    def parse(self, raw_data):
+        pass
 
 class AbuseIPIngestor(BaseIngestor):
     def __init__(self, api_key):
