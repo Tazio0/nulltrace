@@ -120,7 +120,13 @@ class PhishTankIngestor(BaseIngestor):
         super().__init__(feed_name = "PhishTank", base_url="phishtank")
 
     def fetch(self):
-        pass
+        header = {
+            "User-Agent" : " phishtank"
+        }
+        response = requests.get("https://data.phishtank.com/data/online-valid.json", headers=header)
+
+        response.raise_for_status()
+        return response.json()
 
     def parse(self, raw_data):
         if not raw_data:
