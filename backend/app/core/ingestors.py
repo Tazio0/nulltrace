@@ -1,5 +1,6 @@
 
 from abc import ABC, abstractmethod
+import requests
 
 class BaseIngestor(ABC):
     
@@ -22,7 +23,14 @@ class AbuseIPIngestor(BaseIngestor):
 
 
     def fetch(self):
-        pass
+        header = {
+            "Accept": "application/json",
+            "Key": self.api_key,
+        }
+        response = requests.get("https://api.abuseipdb.com/api/v2/blacklist", headers=header)
+
+        response.raise_for_status()
+        return response.json()
 
     def parse(self, raw_data):
         data = raw_data["data"]
