@@ -57,7 +57,13 @@ class AlienVaultIngestor(BaseIngestor):
         super().__init__(feed_name = "AlienVault OTX", base_url="otx.alienvault.com", api_key=api_key)
 
     def fetch(self):
-        pass
+        header = {
+            "X-OTX-API-KEY": self.api_key,
+        }
+        response = requests.get("https://otx.alienvault.com/api/v1/pulses/subscribed", headers=header)
+
+        response.raise_for_status()
+        return response.json()
 
     def parse(self, raw_data):
         results = raw_data["results"]
