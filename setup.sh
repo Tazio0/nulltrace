@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "🛡️  ThreatWatch — Environment Setup"
+echo "ThreatWatch — Environment Setup"
 echo "===================================="
 echo ""
 
 if ! command -v python3 &> /dev/null; then
-    echo "❌ python3 not found. Install Python 3.11+ first."
+    echo "python3 not found. Install Python 3.11+ first."
     exit 1
 fi
 
@@ -39,7 +39,7 @@ fi
 
 echo ""
 echo "===================================="
-echo "✅ Setup complete."
+echo "Setup complete."
 echo ""
 echo "Next steps:"
 echo "  1. Add your API keys to .env"
