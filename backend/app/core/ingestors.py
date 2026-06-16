@@ -71,12 +71,21 @@ class AlienVaultIngestor(BaseIngestor):
         if not results:
             return []
 
+        type_map = {
+            "IPv4": "ip",
+            "IPv6": "ip",
+            "URL": "url",
+            "domain": "domain",
+            "hostname": "domain",
+            "FQDN": "domain",
+        }
+
         new_data = []
         for pulse in results:
             for entry in pulse["indicators"]:
                 entries = {
                     "indicator": entry.get("indicator"),
-                    "type" : entry["type"],
+                    "type" : type_map.get(entry["type"], "unknown"),
                     "source" : self.feed_name,
                     "severity": entry.get("severity"),
                     "country": entry.get("country")
@@ -90,20 +99,21 @@ class URLhausIngestor(BaseIngestor):
         super().__init__(feed_name = "URLhaus", base_url="urlhaus")
 
     def fetch(self):
-        response = requests.get("https://urlhaus-api.abuse.ch/v1/urls/recent/")
+        response = requests.get("https://urlhaus.abuse.ch/downloads/json_recent/")
 
         response.raise_for_status()
         return response.json()
 
     def parse(self, raw_data):
-        urls = raw_data["urls"]
-
-        if not urls:
+        if not raw_data:
             return []
 
         new_data = []
 
-        for url in urls:
+        for entry_list in raw_data.values():
+            if not entry_list:
+                continue
+            url = entry_list[0]
             if url["url_status"] == "online":
                 url1 = {"indicator":url['url'],
                         "type" : "url",
@@ -121,7 +131,7 @@ class PhishTankIngestor(BaseIngestor):
 
     def fetch(self):
         header = {
-            "User-Agent" : " phishtank"
+            "User-Agent" : "threatwatch/2.0 (cybersecurity research project)"
         }
         response = requests.get("https://data.phishtank.com/data/online-valid.json", headers=header)
 

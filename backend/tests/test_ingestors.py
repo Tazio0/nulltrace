@@ -232,6 +232,43 @@ class TestAlienVaultIngestor:
         result = ingestor.parse(raw)
         assert result == []
 
+    def test_parse_normalises_otx_type_strings(self):
+        """
+        OTX uses its own type vocabulary (IPv4, IPv6, URL, domain, hostname, FQDN).
+        parse() must normalise these to the project's three-value contract:
+        ip, url, or domain. No raw OTX type strings should leak through.
+        """
+        ingestor = AlienVaultIngestor(api_key="OTX_KEY")
+
+        # Each tuple: (raw OTX type, expected normalised type)
+        otx_types = [
+            ("IPv4", "ip"),
+            ("IPv6", "ip"),
+            ("URL", "url"),
+            ("domain", "domain"),
+            ("hostname", "domain"),
+            ("FQDN", "domain"),
+        ]
+
+        for raw_type, expected_type in otx_types:
+            raw = {
+                "results": [
+                    {
+                        "indicators": [
+                            {
+                                "indicator": "test-indicator",
+                                "type": raw_type,
+                            }
+                        ]
+                    }
+                ]
+            }
+            result = ingestor.parse(raw)
+            assert result[0]["type"] == expected_type, (
+                f"OTX type '{raw_type}' should normalise to '{expected_type}', "
+                f"got '{result[0]['type']}'"
+            )
+
 
 # ---------------------------------------------------------------------------
 # 4. URLhaus Ingestor
