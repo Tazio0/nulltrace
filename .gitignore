@@ -218,3 +218,11 @@ __marimo__/
 .streamlit/secrets.toml
 .idea/
 .vscode/
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Wiki (managed separately at github.com/Tazio0/threatwatch/wiki)
+threatwatch.wiki/
