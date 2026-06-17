@@ -1,80 +1,70 @@
-# 🛡️ ThreatWatch
-### Autonomous Cyber Defense & Deception Platform
+# ThreatWatch
 
-Cybersecurity threat intelligence dashboard using FastAPI, PostgreSQL, Docker, Pytest, and public threat feeds.
+ThreatWatch is a cybersecurity-focused threat intelligence dashboard built with Python, FastAPI, PostgreSQL, Docker, and Pytest.
 
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![Pytest](https://img.shields.io/badge/TDD-123%20tests-green?style=flat-square&logo=pytest&logoColor=white)](https://pytest.org)
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+It collects and processes threat intelligence from public security feeds, helping surface suspicious IPs, malicious URLs, and security context in a structured backend system.
 
-> ⚠️ **Educational project.** Built for the WeThinkCode_ Cybersecurity Elective Application 2026. Do not deploy against systems you do not own. See [DISCLAIMER.md](DISCLAIMER.md).
+This is an educational portfolio project built to strengthen my backend development, API design, testing, Docker, database, and cybersecurity skills.
 
----
+## Current Status
 
-## The Four Pillars
+ThreatWatch is actively being developed.
 
-**🌐 Multi-Feed Intelligence Ingestion**
-Real-time ingestion from five public threat feeds via a decoupled OOP hierarchy — each feed is a concrete class extending a `BaseIngestor` ABC with `fetch()` and `parse()` methods. Feeds: AbuseIPDB, AlienVault OTX, URLhaus, PhishTank, Blocklist.de.
+Working:
+- Backend API structure
+- Threat feed ingestion foundation
+- Database integration
+- Environment-based configuration
+- Test suite
+- Docker Compose setup
 
-**🕸️ The Spiderweb — Active Deception Engine**
-A lightweight honeypot that impersonates real services (SSH, Telnet) to catch attackers scanning your network. Logs every connection attempt with attacker IP, port, timestamp, and captured credentials.
+In progress:
+- Dashboard/frontend
+- More threat intelligence sources
+- Improved South African threat context
+- Better scoring and filtering logic
 
-**🔒 The Iron Curtain — Automated Threat Mitigation**
-Translates malicious IPs into ready-to-use firewall block commands for Linux UFW, iptables, and MikroTik RouterOS. One IP in — three firewall commands out.
+## Why I Built This
 
-**📡 The War Room — Real-Time Notifications**
-Instant markdown-formatted Discord webhook alerts on high-severity threat matches or honeypot triggers, with severity-coded colour formatting.
+I built ThreatWatch because I wanted a portfolio project that connects backend development with cybersecurity.
 
----
+Instead of building another basic CRUD app, I wanted to work on something closer to real-world security tooling: collecting external threat data, processing it safely, storing it properly, testing the logic, and presenting the information in a useful way.
 
-## Tech Stack
+The goal of this project is to show that I can build structured backend systems, work with APIs, write tests, use Docker, and think about security-focused software responsibly.
 
-| Layer | Technology |
-|---|---|
-| Backend | FastAPI (Python 3.11+) |
-| Scheduling | APScheduler |
-| Database | PostgreSQL 16 + SQLAlchemy ORM |
-| Testing | Pytest — TDD throughout |
-| Containerisation | Docker + Docker Compose |
-| Frontend (in progress) | Vanilla JS + Leaflet.js + Chart.js |
+## What This Project Shows
 
----
+This project demonstrates my ability to:
 
-## Project Status
+- Design and structure a backend application
+- Build APIs with FastAPI
+- Work with PostgreSQL and SQLAlchemy
+- Use Docker Compose for local development
+- Write and run tests with Pytest
+- Handle configuration through environment variables
+- Work with external API data
+- Document a project clearly
+- Think about security tools responsibly
 
-> 🚧 Active development — solo build, WeThinkCode_ Cybersecurity Elective submission.
+## Running Tests
 
-| Component | Status |
-|---|---|
-| Multi-feed ingestion layer (5 feeds) | ✅ Complete |
-| Spiderweb honeypot | ✅ Complete |
-| Iron Curtain firewall engine | ✅ Complete |
-| War Room Discord notifier | ✅ Complete |
-| TDD test suite | ✅ 123 tests passing |
-| SQLAlchemy ORM integration | 🔄 In progress |
-| Processing layer (enrichment, scoring) | 🔄 In progress |
-| FastAPI routes | ⏳ Upcoming |
-| Frontend dashboard | ⏳ Upcoming |
-| Docker full-stack setup | ⏳ Upcoming |
-
----
-
-## Quick Start
+From the project root:
 
 ```bash
-git clone https://github.com/Tazio0/threatwatch.git
-cd threatwatch
-cp .env.example .env
-# Add your API keys to .env
-docker-compose up
-```
+PYTHONPATH=. python -m pytest
 
----
+Discord alert output
+<img width="431" height="777" alt="image" src="https://github.com/user-attachments/assets/6e354586-6be9-4f8c-8aff-4641e11de54f" />
 
-## Author
+## Roadmap
 
-**Tazio Petersen** · [github.com/Tazio0](https://github.com/Tazio0)
-*WeThinkCode_ Cape Town · Cybersecurity Elective Application · 2026*
+- [x] Set up FastAPI backend
+- [x] Add PostgreSQL database support
+- [x] Add Docker Compose development environment
+- [x] Add Pytest test suite
+- [ ] Improve threat scoring logic
+- [ ] Add dashboard interface
+- [ ] Add authentication
+- [ ] Add deployment instructions
+- [ ] Add CI pipeline with GitHub Actions
+- [ ] Deploy demo version
