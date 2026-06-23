@@ -19,10 +19,13 @@ Run with:
 import pytest
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from backend.app.processing.scorer import SeverityScorer
 from backend.app.processing.enricher import ThreatEnricher
 from backend.app.processing.deduplicator import ThreatDeduplicator
+from backend.app.database import Base
 from backend.app.models import Threat
 
 
@@ -52,6 +55,20 @@ def _make_threat_dict(
         "severity": severity,
         "country": country,
     }
+
+
+@pytest.fixture
+def sqlite_session():
+    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base.metadata.create_all(bind=engine)
+    session = TestingSessionLocal()
+
+    try:
+        yield session
+    finally:
+        session.close()
+        Base.metadata.drop_all(bind=engine)
 
 
 # ---------------------------------------------------------------------------
@@ -107,6 +124,25 @@ class TestSeverityScorer:
         assert result in VALID_SEVERITIES, (
             f"Expected one of {VALID_SEVERITIES}, got '{result}'"
         )
+
+    @pytest.mark.parametrize(
+        ("raw_severity", "expected"),
+        [
+            ("malware_download", "critical"),
+            ("phishing", "high"),
+            ("unknown_threat", "medium"),
+        ],
+    )
+    def test_urlhaus_categories_are_normalized(self, raw_severity, expected):
+        """URLhaus text categories must map into the canonical severity levels."""
+        scorer = SeverityScorer()
+        assert scorer.normalize(raw_severity, "URLhaus") == expected
+
+    @pytest.mark.parametrize("severity", ["low", "medium", "high", "critical"])
+    def test_alienvault_canonical_text_is_preserved(self, severity):
+        """AlienVault OTX text severity should pass through when already canonical."""
+        scorer = SeverityScorer()
+        assert scorer.normalize(severity.upper(), "AlienVault OTX") == severity
 
     def test_phishtank_default_is_high(self):
         """PhishTank has no granular score — default severity must be 'high'."""
@@ -252,6 +288,35 @@ class TestThreatEnricher:
         result = enricher.enrich(threat)
         assert isinstance(result, dict)
 
+    @patch("backend.app.processing.enricher.geo_lookup")
+    def test_enrich_skips_geo_lookup_for_non_ip_indicators(self, mock_geo):
+        """Only IP indicators should be sent through IP geolocation lookup."""
+        enricher = ThreatEnricher()
+        threat = _make_threat_dict(
+            indicator="http://evil.example.com/payload",
+            type_="url",
+            source="URLhaus",
+        )
+
+        result = enricher.enrich(threat)
+
+        mock_geo.assert_not_called()
+        assert result == threat
+        assert result is not threat
+
+    @patch("backend.app.processing.enricher.geo_lookup")
+    def test_enrich_does_not_mutate_original_threat(self, mock_geo):
+        """Enrichment should return a new dict so callers can keep raw data intact."""
+        mock_geo.return_value = {"country_code": "US", "isp": "Google LLC"}
+        enricher = ThreatEnricher()
+        threat = _make_threat_dict(indicator="8.8.8.8", country=None)
+
+        result = enricher.enrich(threat)
+
+        assert result is not threat
+        assert "country_code" not in threat
+        assert result["country_code"] == "US"
+
 
 # ---------------------------------------------------------------------------
 # 3. ThreatDeduplicator
@@ -372,3 +437,54 @@ class TestThreatDeduplicator:
 
         result = dedup.is_duplicate("anything-at-all", session)
         assert result is False
+
+    def test_real_session_detects_indicator_seen_today(self, sqlite_session):
+        """Deduplication must work against a real SQLAlchemy session, not only mocks."""
+        sqlite_session.add(
+            Threat(
+                indicator="198.51.100.10",
+                type="ip",
+                source="AbuseIPDB",
+                severity="high",
+                created_at=datetime.now(),
+            )
+        )
+        sqlite_session.commit()
+
+        dedup = ThreatDeduplicator()
+
+        assert dedup.is_duplicate("198.51.100.10", sqlite_session) is True
+
+    def test_real_session_allows_indicator_only_seen_before_today(self, sqlite_session):
+        """An older matching indicator should not block today's ingestion."""
+        sqlite_session.add(
+            Threat(
+                indicator="203.0.113.77",
+                type="ip",
+                source="Blocklist.de",
+                severity="medium",
+                created_at=datetime.now() - timedelta(days=1),
+            )
+        )
+        sqlite_session.commit()
+
+        dedup = ThreatDeduplicator()
+
+        assert dedup.is_duplicate("203.0.113.77", sqlite_session) is False
+
+    def test_real_session_matches_url_case_insensitively(self, sqlite_session):
+        """URL indicators should deduplicate regardless of case differences."""
+        sqlite_session.add(
+            Threat(
+                indicator="HTTP://EVIL.EXAMPLE/LOGIN",
+                type="url",
+                source="PhishTank",
+                severity="high",
+                created_at=datetime.now(),
+            )
+        )
+        sqlite_session.commit()
+
+        dedup = ThreatDeduplicator()
+
+        assert dedup.is_duplicate("http://evil.example/login", sqlite_session) is True
