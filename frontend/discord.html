@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discord | ThreatWatch</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="page">
+    <nav class="nav">
+      <div class="logo">ThreatWatch</div>
+
+      <div class="nav-links">
+        <a href="index.html">Overview</a>
+        <a href="monitor.html">Monitor</a>
+        <a href="threat-feed.html">Threat Feed</a>
+        <a href="exports.html">Exports</a>
+        <a href="system.html">System</a>
+      </div>
+    </nav>
+
+    <section class="page-header">
+      <div class="tag">Discord alerts</div>
+
+      <h1>Send high-priority threat alerts to Discord.</h1>
+
+      <p>
+        Connect a Discord webhook so ThreatWatch can notify your team when critical
+        or export-ready indicators are detected.
+      </p>
+    </section>
+
+    <section class="discord-layout">
+      <div class="panel">
+        <h2>Webhook setup</h2>
+        <p>Paste your Discord webhook URL below. This frontend demo does not save secrets yet.</p>
+
+        <label class="form-label">Discord Webhook URL</label>
+        <input class="form-input" type="text" placeholder="https://discord.com/api/webhooks/..." />
+
+        <label class="form-label">Alert level</label>
+        <select class="form-input">
+          <option>Critical only</option>
+          <option>High and critical</option>
+          <option>All export-ready threats</option>
+        </select>
+
+        <div class="buttons">
+          <button class="primary">Connect Discord</button>
+          <button class="secondary">Send Test Alert</button>
+        </div>
+
+        <div class="note">
+          Later this should connect to your backend notifier and use your DISCORD_WEBHOOK_URL environment variable.
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Alert preview</h2>
+
+        <div class="discord-preview">
+          <div class="discord-top">
+            <strong>ThreatWatch Alert</strong>
+            <span>Critical</span>
+          </div>
+
+          <div class="discord-message">
+            <p><strong>IOC:</strong> 185.220.101.42</p>
+            <p><strong>Type:</strong> IP Address</p>
+            <p><strong>Confidence:</strong> 94%</p>
+            <p><strong>Source:</strong> AbuseIPDB</p>
+            <p><strong>Action:</strong> Review for blocklist export</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
