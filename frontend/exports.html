@@ -1,109 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exports | ThreatWatch</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-  <main class="page">
-    <nav class="nav">
-      <div class="logo">ThreatWatch</div>
-
-      <div class="nav-links">
-        <a href="index.html">Overview</a>
-        <a href="threat-feed.html">Threat Feed</a>
-        <a class="active" href="exports.html">Exports</a>
-        <a href="system.html">System</a>
-        <a href="monitor.html">Monitor</a>
-      </div>
-    </nav>
-
-    <section class="page-header">
-      <div class="tag">Defensive exports</div>
-
-      <h1>Prepare high-confidence threats for action.</h1>
-
-      <p>
-        Export reviewed indicators into simple defensive formats like blocklists,
-        UFW rule suggestions, and structured JSON for later use.
-      </p>
-    </section>
-
-    <section class="layout">
-      <aside class="panel">
-        <h2>Export formats</h2>
-        <p>Choose the format you want to preview.</p>
-
-        <div class="buttons">
-          <button class="primary" onclick="showExport('blocklist')">Blocklist</button>
-          <button class="secondary" onclick="showExport('ufw')">UFW Rules</button>
-          <button class="secondary" onclick="showExport('json')">JSON</button>
-          <button class="secondary" onclick="copyPreview()">Copy Preview</button>
-        </div>
-
-        <div class="note">
-          These are defensive suggestions only. ThreatWatch does not automatically block anything.
-        </div>
-      </aside>
-
-      <section class="panel">
-        <div class="preview-header">
-          <h2>Preview</h2>
-          <span class="badge" id="label">Blocklist</span>
-        </div>
-
-        <pre id="preview"></pre>
-      </section>
-    </section>
-  </main>
-
-  <script>
-    const exports = {
-      blocklist: `185.220.101.42
-91.240.118.172
-malicious-login-check.xyz
-update-secure-cloud.info`,
-
-      ufw: `sudo ufw deny from 185.220.101.42
-sudo ufw deny from 91.240.118.172
-
-# Domains should usually be handled at DNS/proxy level:
-# malicious-login-check.xyz
-# update-secure-cloud.info`,
-
-      json: `[
-  {
-    "ioc": "185.220.101.42",
-    "type": "ip",
-    "severity": "critical",
-    "confidence": 94,
-    "action": "export"
-  },
-  {
-    "ioc": "malicious-login-check.xyz",
-    "type": "domain",
-    "severity": "high",
-    "confidence": 88,
-    "action": "monitor"
-  }
-]`
-    };
-
-    function showExport(type) {
-      document.getElementById("preview").textContent = exports[type];
-      document.getElementById("label").textContent = type.toUpperCase();
-    }
-
-    function copyPreview() {
-      const text = document.getElementById("preview").textContent;
-      navigator.clipboard.writeText(text);
-      alert("Preview copied.");
-    }
-
-    showExport("blocklist");
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0; url=./#exports" />
+    <title>Exports | Nulltrace</title>
+    <script>location.replace('./#exports');</script>
+  </head>
+  <body>
+    <a href="./#exports">Open the export section</a>
+  </body>
 </html>

@@ -1,101 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Threat Feed | ThreatWatch</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-  <main class="page">
-    <nav class="nav">
-    <div class="logo">ThreatWatch</div>
-
-    <div class="nav-links">
-      <a href="index.html">Overview</a>
-      <a class="active" href="threat-feed.html">Threat Feed</a>
-      <a href="exports.html">Exports</a>
-      <a href="system.html">System</a>
-      <a href="monitor.html">Monitor</a>
-    </div>
-  </nav>
-
-    <section class="page-header">
-      <div class="tag">Live threat feed</div>
-
-      <h1>Review today’s observed indicators.</h1>
-
-      <p>
-        This page shows suspicious IPs, domains, and URLs collected from public threat feeds.
-        Open each item to see why it was flagged and what action ThreatWatch recommends.
-      </p>
-    </section>
-
-    <section class="feed">
-      <details>
-        <summary>
-          <div>
-            <div class="ioc">185.220.101.42</div>
-            <div class="meta">IP Address · AbuseIPDB · 94% confidence</div>
-          </div>
-
-          <div class="badges">
-            <span class="badge critical">Critical</span>
-            <span class="badge">Export Ready</span>
-          </div>
-        </summary>
-
-        <div class="details">
-          <strong>Reason:</strong> Repeated malicious activity reported across public feeds.<br>
-          <strong>Recommended action:</strong> Review for blocklist export.<br>
-          <strong>First seen:</strong> Today, 08:12<br>
-          <strong>Last seen:</strong> Today, 22:31
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <div>
-            <div class="ioc">malicious-login-check[.]xyz</div>
-            <div class="meta">Domain · URLhaus · 88% confidence</div>
-          </div>
-
-          <div class="badges">
-            <span class="badge high">High</span>
-            <span class="badge">Monitor</span>
-          </div>
-        </summary>
-
-        <div class="details">
-          <strong>Reason:</strong> Suspicious naming pattern linked to credential harvesting.<br>
-          <strong>Recommended action:</strong> Monitor and confirm before export.<br>
-          <strong>First seen:</strong> Today, 10:02<br>
-          <strong>Last seen:</strong> Today, 21:46
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <div>
-            <div class="ioc">91.240.118.172</div>
-            <div class="meta">IP Address · OTX · 76% confidence</div>
-          </div>
-
-          <div class="badges">
-            <span class="badge medium">Medium</span>
-            <span class="badge">Needs Review</span>
-          </div>
-        </summary>
-
-        <div class="details">
-          <strong>Reason:</strong> Moderate-confidence indicator seen in external reports.<br>
-          <strong>Recommended action:</strong> Keep under review until confidence improves.<br>
-          <strong>First seen:</strong> Yesterday, 11:42<br>
-          <strong>Last seen:</strong> Today, 19:08
-        </div>
-      </details>
-    </section>
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0; url=./#feed" />
+    <title>Threat Feed | Nulltrace</title>
+    <script>location.replace('./#feed');</script>
+  </head>
+  <body>
+    <a href="./#feed">Open the threat feed section</a>
+  </body>
 </html>

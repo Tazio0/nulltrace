@@ -1,0 +1,25 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Nulltrace mark</title>
+  <defs>
+    <linearGradient id="shell" x1="20" y1="14" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111111"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="35" y1="24" x2="95" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.52" stop-color="#D8D8D8"/>
+      <stop offset="1" stop-color="#8F8F8F"/>
+    </linearGradient>
+    <filter id="shadow" x="6" y="8" width="116" height="116" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect x="15" y="13" width="98" height="98" rx="31" fill="url(#shell)" filter="url(#shadow)"/>
+  <path d="M91 65C91 82.67 79.14 96 64 96C48.86 96 37 82.67 37 65C37 47.33 48.86 34 64 34C79.14 34 91 47.33 91 65Z" stroke="url(#stroke)" stroke-width="9"/>
+  <path d="M36 86L53.5 68.5" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <path d="M61 61L70 52" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <path d="M78 44L94 28" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="53.5" cy="68.5" r="4.5" fill="#F7F7F7"/>
+  <circle cx="70" cy="52" r="4.5" fill="#F7F7F7"/>
+</svg>

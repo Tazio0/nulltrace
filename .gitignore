@@ -226,3 +226,12 @@ __pycache__/
 
 # Wiki (managed separately at github.com/Tazio0/threatwatch/wiki)
 threatwatch.wiki/
+
+# Frontend dependencies and build output
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Local agent/project context and private design references
+.agent-memory.md
+frontend/ref/
