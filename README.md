@@ -1,340 +1,245 @@
-# ThreatWatch
+# Nulltrace
 
-A cybersecurity-focused threat intelligence dashboard built with **Python**, **FastAPI**, **PostgreSQL**, **Docker**, and **Pytest**.
+Nulltrace is a defensive cybersecurity dashboard project focused on threat intelligence collection, review, and alerting.
 
-ThreatWatch collects and processes threat intelligence from public security feeds, helping surface suspicious IPs, malicious URLs, and security context through a structured backend system.
+The project is currently a polished frontend prototype backed by a Python/FastAPI backend foundation. The frontend demonstrates the intended analyst workflow using mock/demo data. The backend contains models, tests, feed ingestor foundations, processing skeletons, and planned API route structure that can be completed and wired into the frontend later.
 
-This is an educational portfolio project built to strengthen my skills in backend development, API design, testing, Docker, databases, and cybersecurity-aware software engineering.
+This is a portfolio and learning project, not an enterprise security product.
 
----
+## What Nulltrace Is Trying To Demonstrate
 
-## Table of Contents
+- Threat intelligence ingestion from public security feeds.
+- Indicator normalization across different feed formats.
+- Severity scoring and deduplication logic.
+- South Africa-focused threat context.
+- Discord alert delivery concepts.
+- Defensive export/mitigation concepts.
+- A modern frontend interface for reviewing signals before action.
+- Testable backend structure using FastAPI, SQLAlchemy, and Pytest.
 
-* [Overview](#overview)
-* [Project Status](#project-status)
-* [Why I Built This](#why-i-built-this)
-* [What This Project Demonstrates](#what-this-project-demonstrates)
-* [Features](#features)
-* [Tech Stack](#tech-stack)
-* [Discord Alert Output](#discord-alert-output)
-* [Architecture](#architecture)
-* [Getting Started](#getting-started)
-* [Running Tests](#running-tests)
-* [Project Roadmap](#project-roadmap)
-* [Security and Responsible Use](#security-and-responsible-use)
-* [What I Learned](#what-i-learned)
-* [Future Improvements](#future-improvements)
+## Current Status
 
----
+### Working Now
 
-## Overview
+- Modern React/Vite frontend branded as Nulltrace.
+- Animated globe with real country outlines rendered from map data.
+- Mock threat routes, indicators, country insight drawer, and dashboard metrics.
+- Frontend-only Discord webhook test form.
+- FastAPI app with `/health` endpoint.
+- SQLAlchemy models for threats, honeypot logs, and firewall rules.
+- Feed ingestor classes for AbuseIPDB, AlienVault OTX, URLhaus, PhishTank, and Blocklist.de.
+- Pytest test suite covering models, database structure, ingestors, notifier behavior, mitigation helpers, and planned route contracts.
+- Backend skeleton files for routes, repositories, services, and ingestion tasks.
 
-ThreatWatch is a backend-focused cybersecurity project that works with threat intelligence data from public sources.
+### In Progress / Not Finished Yet
 
-The project is designed around a simple idea:
-
-> Collect threat indicators, process them safely, store useful context, and present alerts in a way that is easy to understand.
-
-ThreatWatch currently focuses on backend functionality and alerting. The long-term goal is to grow it into a more complete dashboard for viewing, filtering, and understanding threat intelligence data.
-
----
-
-## Project Status
-
-ThreatWatch is currently in active development.
-
-### Working
-
-* FastAPI backend structure
-* Threat feed ingestion foundation
-* PostgreSQL database integration
-* Environment-based configuration
-* Docker Compose setup
-* Pytest test suite
-* Discord alert notifications
-* Public threat intelligence feed processing
-
-### In Progress
-
-* Dashboard/frontend interface
-* Improved threat scoring logic
-* More threat intelligence sources
-* Better South African threat context
-* Deployment workflow
-* GitHub Actions continuous integration
-
----
-
-## Why I Built This
-
-I built ThreatWatch because I wanted a portfolio project that connects backend development with cybersecurity.
-
-Instead of building another basic CRUD app, I wanted to work on something closer to real-world security tooling. ThreatWatch gives me practice with external APIs, threat data, backend architecture, databases, testing, Docker, and responsible security-focused development.
-
-The goal of this project is not to claim that ThreatWatch is a finished enterprise security product. The goal is to show that I can design, build, test, document, and improve a real backend system around a practical cybersecurity use case.
-
----
-
-## What This Project Demonstrates
-
-ThreatWatch demonstrates my ability to:
-
-* Design and structure a backend application
-* Build APIs with FastAPI
-* Work with PostgreSQL and SQLAlchemy
-* Use Docker Compose for local development
-* Write and run automated tests with Pytest
-* Handle configuration through environment variables
-* Work with external threat intelligence data
-* Send formatted Discord alerts through webhook integration
-* Document a project clearly for other developers
-* Think about security tools responsibly
-* Build a project that can grow beyond a simple tutorial or school assignment
-
----
-
-## Features
-
-### Threat Intelligence Feed Processing
-
-ThreatWatch collects indicators from supported public threat intelligence feeds and processes them into a structured format.
-
-Examples of threat data include:
-
-* Suspicious IP addresses
-* Malicious URLs
-* Feed source information
-* Country context
-* Indicator type
-* Threat totals from supported feeds
-
-### Discord Alert Notifications
-
-ThreatWatch can send formatted alerts to Discord when threat indicators are collected.
-
-This helps demonstrate real output from the system instead of only showing backend code.
-
-### Backend API Foundation
-
-The project is built around a FastAPI backend, making it easier to expand with:
-
-* API endpoints
-* dashboard integration
-* filtering
-* authentication
-* search
-* future deployment
-
-### Database Integration
-
-ThreatWatch uses PostgreSQL for storing and managing threat intelligence data.
-
-### Testing
-
-The project includes automated tests using Pytest to validate backend behaviour, configuration, feed processing, and threat intelligence workflows.
-
-### Docker-Based Development
-
-Docker Compose is used to make the project easier to run locally with its required services.
-
----
+- Backend API route logic is planned but not implemented.
+- Frontend still uses mock/demo data through `frontend/src/dataAdapter.js`.
+- Discord webhook testing is currently done directly from the browser; a backend proxy is a future improvement.
+- Ingestion pipeline orchestration is skeleton-only.
+- Severity scoring, enrichment, and deduplication still need real implementation.
+- Database migrations are not set up yet.
+- Authentication and production deployment are not implemented.
 
 ## Tech Stack
 
-| Area                    | Technology             |
-| ----------------------- | ---------------------- |
-| Language                | Python                 |
-| Backend Framework       | FastAPI                |
-| Database                | PostgreSQL             |
-| ORM / Database Layer    | SQLAlchemy             |
-| Testing                 | Pytest                 |
-| Containerisation        | Docker, Docker Compose |
-| Alerts                  | Discord Webhooks       |
-| Development Environment | Linux, Git, GitHub     |
+| Area | Technology |
+| --- | --- |
+| Frontend | React, Vite, Three.js, GSAP |
+| Backend | Python, FastAPI |
+| Database | PostgreSQL, SQLAlchemy |
+| Testing | Pytest |
+| Local services | Docker Compose |
+| Alerts | Discord Webhooks |
+| Map data | world-atlas, topojson-client, d3-geo |
 
----
-
-## Discord Alert Output
-
-ThreatWatch sends formatted threat intelligence alerts to Discord when indicators are collected from supported public feeds.
-
-Each alert includes:
-
-* Feed source
-* Threat indicator
-* Indicator type
-* Country context
-* Total threats available from the feed
-
-<img width="431" height="777" alt="ThreatWatch Discord alert output" src="https://github.com/user-attachments/assets/6e354586-6be9-4f8c-8aff-4641e11de54f" />
-
----
-
-## Architecture
-
-ThreatWatch is designed as a backend-first system with separate responsibilities for ingestion, processing, storage, and alerting.
+## Project Structure
 
 ```text
-Public Threat Feeds
-        |
-        v
-Threat Feed Ingestion
-        |
-        v
-Processing and Normalisation
-        |
-        v
-Database Storage
-        |
-        v
-FastAPI Backend
-        |
-        v
-Discord Alerts / Future Dashboard
+backend/
+  app/
+    api/                 Planned FastAPI route modules
+    core/                Feed ingestors, notifier, mitigation helpers
+    processing/          Scoring, enrichment, deduplication skeletons
+    repositories/        Planned SQLAlchemy query layer
+    services/            Planned business logic layer
+    tasks/               Planned ingestion job entry points
+    database.py          SQLAlchemy engine/session setup
+    main.py              FastAPI application
+    models.py            ORM models
+    schemas.py           Planned schema pseudocode
+  tests/                 Pytest suite
+  BACKEND_IMPLEMENTATION_GUIDE.md
+
+frontend/
+  src/                   Nulltrace React frontend
+  assets/                Nulltrace logo/mark
+  package.json           Frontend scripts and dependencies
 ```
 
-### Core Flow
+## Frontend Demo
 
-1. ThreatWatch collects data from supported public threat intelligence feeds.
-2. The data is processed and normalised into a consistent structure.
-3. Useful threat context is stored in the database.
-4. Alerts can be sent to Discord.
-5. Future dashboard/API features can use the stored data for filtering, viewing, and analysis.
+The frontend is the most demo-ready part of the project right now.
 
----
+It includes:
 
-## Getting Started
+- Nulltrace visual identity.
+- Animated globe with real country borders.
+- Clickable demo country markers.
+- Country insight drawer with mock stats and indicators.
+- Threat feed cards.
+- Discord webhook test UI.
+- Export preview section.
+- Backend API handoff notes.
 
-### Prerequisites
-
-Make sure you have the following installed:
-
-* Python 3.11+
-* Git
-* Docker
-* Docker Compose
-
-### Clone the Repository
+Run it:
 
 ```bash
-git clone https://github.com/Tazio0/threatwatch.git
-cd threatwatch
+cd frontend
+npm install
+npm run dev
 ```
 
-### Set Up Environment Variables
+Open:
 
-Create your local environment file from the example file:
+```text
+http://127.0.0.1:5173/
+```
+
+Build it:
+
+```bash
+cd frontend
+npm run build
+```
+
+## Backend Setup
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create your environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Then update the `.env` file with the required local settings and API keys for the threat feeds you want to use.
+Update `.env` with local settings and any API keys you want to use. Do not commit real secrets.
 
-Do not commit real API keys, tokens, webhook URLs, or secrets to GitHub.
-
-### Run with Docker Compose
+Start PostgreSQL:
 
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
-This starts the local development services defined in the Docker Compose configuration.
+Run the FastAPI app:
 
----
+```bash
+uvicorn backend.app.main:app --reload
+```
+
+Health check:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+## Backend Implementation Guide
+
+The backend skeleton is documented here:
+
+```text
+backend/BACKEND_IMPLEMENTATION_GUIDE.md
+```
+
+That guide explains:
+
+- what each backend file is for
+- the recommended implementation order
+- route contracts expected by the frontend
+- pseudocode for services/repositories
+- suggested tests to add later
+- how to replace mock frontend data with real API calls
+
+## Planned API Routes
+
+The route files are documentation/pseudocode only right now. Only `/health` is active until you implement and register the API routers.
+
+```text
+GET /health
+GET /api/threats/live
+GET /api/threats/live?countries=ZA
+GET /api/threats/stats
+GET /api/map/heatmap-data
+GET /api/search?q=<indicator>
+GET /api/sa/threats
+GET /api/sa/stats
+GET /api/countries/{country_code}/profile
+GET /api/countries/{country_code}/routes
+```
 
 ## Running Tests
 
-From the project root, run:
+From the project root:
 
 ```bash
 PYTHONPATH=. python -m pytest
 ```
 
-The test suite covers backend structure, feed processing, configuration, and threat intelligence workflows.
+Run a specific test file:
 
----
+```bash
+PYTHONPATH=. python -m pytest backend/tests/test_routes.py -v
+```
 
-## Project Roadmap
+Note: some route tests describe the intended finished backend behavior. Those tests are expected to fail until you implement and register the planned API routes.
 
-### Completed
+## Responsible Use
 
-* [x] Set up FastAPI backend structure
-* [x] Add PostgreSQL database support
-* [x] Add Docker Compose development environment
-* [x] Add Pytest test suite
-* [x] Add Discord alert notifications
-* [x] Add public threat feed processing foundation
-* [x] Add environment-based configuration
+Nulltrace is designed as a defensive and educational project.
 
-### In Progress
+The project should be used for:
 
-* [ ] Improve threat scoring logic
-* [ ] Add more threat intelligence sources
-* [ ] Improve South African threat context
-* [ ] Add dashboard/frontend interface
-* [ ] Add authentication
-* [ ] Add deployment instructions
-* [ ] Add CI pipeline with GitHub Actions
-* [ ] Deploy a demo version
+- learning backend engineering through a cybersecurity use case
+- practicing threat intelligence data handling
+- demonstrating defensive alerting and review workflows
+- portfolio demos and QA/testing exercises
 
----
+The project should not be presented as a finished security product or used to automate blocking decisions without human review.
 
-## Security and Responsible Use
+## Roadmap
 
-ThreatWatch is an educational cybersecurity project.
+Short-term:
 
-It is intended for learning, portfolio development, and responsible experimentation with public threat intelligence data.
+- Implement severity scoring.
+- Implement enrichment and deduplication.
+- Implement repository queries.
+- Complete `/api/threats/*`, `/api/map/*`, `/api/sa/*`, and `/api/countries/*` endpoints.
+- Add tests for country profile and route endpoints.
+- Wire frontend data adapter to real API responses.
 
-This project should not be used to attack systems, scan targets without permission, expose private data, or automate harmful activity.
+Medium-term:
 
-Any API keys, webhook URLs, credentials, or private configuration values should be stored locally in environment variables and never committed to the repository.
+- Add ingestion job runner.
+- Add database migrations with Alembic.
+- Move Discord webhook testing through FastAPI.
+- Add CI for backend tests and frontend build.
+- Add deployment instructions.
 
----
+Long-term:
 
-## What I Learned
-
-Through this project, I strengthened my understanding of:
-
-* How to structure a backend project around clear responsibilities
-* How to work with external APIs and public security feeds
-* How to process and normalise data from different sources
-* How to use environment variables for configuration and secrets
-* How to connect backend logic to PostgreSQL
-* How to write tests for backend behaviour
-* How Docker Compose helps with local development
-* How to send useful alert output through Discord webhooks
-* How to document a technical project for future employers and collaborators
-* How to think about cybersecurity tooling responsibly
-
----
-
-## Future Improvements
-
-The next major improvements planned for ThreatWatch are:
-
-* Add a dashboard interface for viewing threats visually
-* Add filtering by country, feed source, indicator type, and severity
-* Improve scoring logic for threat indicators
-* Add authentication for dashboard/API access
-* Add GitHub Actions so tests run automatically on every push
-* Add deployment instructions
-* Deploy a live demo version
-* Add more detailed architecture documentation
-* Add screenshots of API docs and test output
-
----
-
-## Author
-
-Built by **Tazio Petersen**.
-
-Software Development student at **WeThinkCode_**, focused on backend development, cloud, and cybersecurity.
-
-GitHub: [Tazio0](https://github.com/Tazio0)
-
----
-
-## License
-
-This project is licensed under the MIT License.
+- Add authentication.
+- Add saved analyst notes or review states.
+- Add real country-level route data.
+- Add clickable country polygons instead of marker-only demo hit areas.
+- Add production-safe observability and error handling.
