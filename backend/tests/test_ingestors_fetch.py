@@ -10,7 +10,6 @@ from backend.app.core.ingestors import (
 
 @patch("backend.app.core.ingestors.requests.get")
 def test_abuseipdb_fetch(mock_get):
-    """AbuseIPIngestor.fetch() must perform a GET request with API Key header."""
     mock_response = MagicMock()
     mock_response.json.return_value = {"data": [{"ipAddress": "1.2.3.4"}]}
     mock_response.raise_for_status = MagicMock()
@@ -31,7 +30,6 @@ def test_abuseipdb_fetch(mock_get):
 
 @patch("backend.app.core.ingestors.requests.get")
 def test_alienvault_fetch(mock_get):
-    """AlienVaultIngestor.fetch() must perform a GET request with OTX key header."""
     mock_response = MagicMock()
     mock_response.json.return_value = {"results": []}
     mock_response.raise_for_status = MagicMock()
@@ -51,7 +49,6 @@ def test_alienvault_fetch(mock_get):
 
 @patch("backend.app.core.ingestors.requests.get")
 def test_urlhaus_fetch(mock_get):
-    """URLhausIngestor.fetch() must perform a GET request to recent URLs endpoint."""
     mock_response = MagicMock()
     mock_response.json.return_value = {"urls": []}
     mock_response.raise_for_status = MagicMock()
@@ -66,7 +63,6 @@ def test_urlhaus_fetch(mock_get):
 
 @patch("backend.app.core.ingestors.requests.get")
 def test_phishtank_fetch(mock_get):
-    """PhishTankIngestor.fetch() must perform a GET request with custom User-Agent."""
     mock_response = MagicMock()
     mock_response.json.return_value = []
     mock_response.raise_for_status = MagicMock()
@@ -76,7 +72,6 @@ def test_phishtank_fetch(mock_get):
     result = ingestor.fetch()
 
     mock_get.assert_called_once()
-    # Verify User-Agent header is present to prevent PhishTank blocks
     headers = mock_get.call_args[1].get("headers", {})
     assert "User-Agent" in headers
     assert "threatwatch" in headers["User-Agent"].lower()
@@ -85,7 +80,6 @@ def test_phishtank_fetch(mock_get):
 
 @patch("backend.app.core.ingestors.requests.get")
 def test_blocklistde_fetch(mock_get):
-    """BlocklistDeIngestor.fetch() must fetch and return plaintext IPs."""
     mock_response = MagicMock()
     mock_response.text = "1.2.3.4\n5.6.7.8\n"
     mock_response.raise_for_status = MagicMock()

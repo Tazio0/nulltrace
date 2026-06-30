@@ -1,23 +1,4 @@
-"""
-ThreatWatch V2.0 - Test Suite: core/ingestors.py
-=================================================
-Full TDD suite for the ingestion layer.
-
-Covers:
-  - ABC enforcement (BaseIngestor cannot be instantiated directly)
-  - Initialization of all 5 feed ingestors
-  - Auth patterns: keyed feeds vs. public feeds
-  - parse() return shape: list of normalized threat dicts
-  - fetch() is mocked throughout — no network calls are made
-  - Edge cases: empty responses, malformed data, missing fields
-
-Dependencies:
-  - pytest          (add to requirements-dev.txt)
-  - unittest.mock   (stdlib — no extra install needed)
-
-Run with:
-  pytest backend/tests/test_ingestors.py -v
-"""
+"""Tests ingestor interfaces, feed initialization, parsing, auth patterns, and edge cases."""
 
 import pytest
 from unittest.mock import MagicMock, patch
@@ -31,20 +12,10 @@ from backend.app.core.ingestors import (
     BlocklistDeIngestor,
 )
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 EXPECTED_FIELDS = {"indicator", "type", "source", "severity", "country"}
-"""
-Every normalized threat dict returned by parse() must contain at least
-these keys. Additional keys are allowed — tests assert on the subset.
-"""
 
 
 def assert_valid_threat_list(result):
-    """Reusable assertion: result must be a non-empty list of valid dicts."""
     assert isinstance(result, list), "parse() must return a list"
     assert len(result) > 0, "parse() must return at least one item"
     for item in result:
@@ -52,34 +23,20 @@ def assert_valid_threat_list(result):
         for field in EXPECTED_FIELDS:
             assert field in item, f"Missing required field: '{field}'"
 
-
-# ---------------------------------------------------------------------------
-# 1. Abstract Base Class
-# ---------------------------------------------------------------------------
-
 class TestBaseIngestor:
 
     def test_base_ingestor_cannot_be_instantiated(self):
-        """BaseIngestor is an ABC — direct instantiation must raise TypeError."""
         with pytest.raises(TypeError):
             BaseIngestor(api_key="test")
 
     def test_base_ingestor_enforces_parse_method(self):
-        """
-        A subclass that does NOT implement parse() must also raise TypeError.
-        This confirms parse() is declared as @abstractmethod.
-        """
         class IncompleteIngestor(BaseIngestor):
-            pass  # Deliberately missing parse()
+            pass
 
         with pytest.raises(TypeError):
             IncompleteIngestor(api_key="key")
 
     def test_base_ingestor_enforces_fetch_method(self):
-        """
-        A subclass that does NOT implement fetch() must also raise TypeError.
-        This confirms fetch() is declared as @abstractmethod.
-        """
         class IncompleteIngestor(BaseIngestor):
             def parse(self, raw_data):
                 return []
@@ -88,9 +45,6 @@ class TestBaseIngestor:
             IncompleteIngestor(api_key="key")
 
     def test_concrete_subclass_is_valid_without_instantiation_error(self):
-        """
-        A subclass that implements all abstract methods must not raise TypeError.
-        """
         class FullIngestor(BaseIngestor):
             def fetch(self):
                 return {}
@@ -101,27 +55,19 @@ class TestBaseIngestor:
         ingestor = FullIngestor(feed_name="Mock", base_url="http://mock.com",api_key="key")
         assert ingestor is not None
 
-
-# ---------------------------------------------------------------------------
-# 2. AbuseIPDB Ingestor
-# ---------------------------------------------------------------------------
-
 class TestAbuseIPIngestor:
 
     def test_initialization(self):
-        """AbuseIPIngestor stores its key and exposes correct metadata."""
         ingestor = AbuseIPIngestor(api_key="SECRET_KEY")
         assert ingestor.api_key == "SECRET_KEY"
         assert ingestor.feed_name == "AbuseIPDB"
         assert "abuseipdb.com" in ingestor.base_url
 
     def test_requires_api_key(self):
-        """AbuseIPDB is an authenticated feed — api_key must be required."""
         with pytest.raises(TypeError):
-            AbuseIPIngestor()  # No key provided
+            AbuseIPIngestor()
 
     def test_parse_returns_normalized_list(self):
-        """parse() must return a list of normalized threat dicts."""
         ingestor = AbuseIPIngestor(api_key="SECRET_KEY")
 
         raw = {
@@ -143,13 +89,11 @@ class TestAbuseIPIngestor:
         assert result[0]["country"] == "ZA"
 
     def test_parse_empty_data_returns_empty_list(self):
-        """parse() must return an empty list when the feed returns no results."""
         ingestor = AbuseIPIngestor(api_key="SECRET_KEY")
         result = ingestor.parse({"data": []})
         assert result == []
 
     def test_parse_missing_country_code_does_not_crash(self):
-        """parse() must handle entries with no countryCode gracefully."""
         ingestor = AbuseIPIngestor(api_key="SECRET_KEY")
 
         raw = {
@@ -158,7 +102,6 @@ class TestAbuseIPIngestor:
                     "ipAddress": "10.0.0.1",
                     "abuseConfidenceScore": 75,
                     "totalReports": 5,
-                    # countryCode intentionally missing
                 }
             ]
         }
@@ -168,7 +111,6 @@ class TestAbuseIPIngestor:
         assert result[0]["country"] is None or isinstance(result[0]["country"], str)
 
     def test_fetch_does_not_hit_real_network(self):
-        """fetch() must be mockable — this test never touches the internet."""
         ingestor = AbuseIPIngestor(api_key="SECRET_KEY")
 
         with patch.object(ingestor, "fetch", return_value={"data": []}) as mock_fetch:
@@ -176,27 +118,19 @@ class TestAbuseIPIngestor:
             mock_fetch.assert_called_once()
             assert result == {"data": []}
 
-
-# ---------------------------------------------------------------------------
-# 3. AlienVault OTX Ingestor
-# ---------------------------------------------------------------------------
-
 class TestAlienVaultIngestor:
 
     def test_initialization(self):
-        """AlienVaultIngestor stores its key and exposes correct metadata."""
         ingestor = AlienVaultIngestor(api_key="OTX_KEY")
         assert ingestor.api_key == "OTX_KEY"
         assert ingestor.feed_name == "AlienVault OTX"
         assert "otx.alienvault.com" in ingestor.base_url
 
     def test_requires_api_key(self):
-        """AlienVault OTX is authenticated — api_key must be required."""
         with pytest.raises(TypeError):
             AlienVaultIngestor()
 
     def test_parse_returns_normalized_list(self):
-        """parse() must return normalized threat dicts from OTX pulse format."""
         ingestor = AlienVaultIngestor(api_key="OTX_KEY")
 
         raw = {
@@ -220,27 +154,19 @@ class TestAlienVaultIngestor:
         assert result[0]["source"] == "AlienVault OTX"
 
     def test_parse_empty_results_returns_empty_list(self):
-        """parse() must handle an empty results list."""
         ingestor = AlienVaultIngestor(api_key="OTX_KEY")
         result = ingestor.parse({"results": []})
         assert result == []
 
     def test_parse_pulse_with_no_indicators_returns_empty_list(self):
-        """parse() must skip pulses that have no indicators."""
         ingestor = AlienVaultIngestor(api_key="OTX_KEY")
         raw = {"results": [{"indicators": []}]}
         result = ingestor.parse(raw)
         assert result == []
 
     def test_parse_normalises_otx_type_strings(self):
-        """
-        OTX uses its own type vocabulary (IPv4, IPv6, URL, domain, hostname, FQDN).
-        parse() must normalise these to the project's three-value contract:
-        ip, url, or domain. No raw OTX type strings should leak through.
-        """
         ingestor = AlienVaultIngestor(api_key="OTX_KEY")
 
-        # Each tuple: (raw OTX type, expected normalised type)
         otx_types = [
             ("IPv4", "ip"),
             ("IPv6", "ip"),
@@ -269,22 +195,15 @@ class TestAlienVaultIngestor:
                 f"got '{result[0]['type']}'"
             )
 
-
-# ---------------------------------------------------------------------------
-# 4. URLhaus Ingestor
-# ---------------------------------------------------------------------------
-
 class TestURLhausIngestor:
 
     def test_initialization(self):
-        """URLhausIngestor is a public feed — no API key required."""
         ingestor = URLhausIngestor()
         assert ingestor.api_key is None
         assert ingestor.feed_name == "URLhaus"
         assert "urlhaus" in ingestor.base_url
 
     def test_parse_returns_normalized_list(self):
-        """parse() must extract URLs and map them to normalized threat dicts."""
         ingestor = URLhausIngestor()
 
         raw = {
@@ -305,10 +224,6 @@ class TestURLhausIngestor:
         assert result[0]["source"] == "URLhaus"
 
     def test_parse_filters_offline_urls(self):
-        """
-        parse() should only return active/online threats.
-        Offline URLs are stale and should be excluded.
-        """
         ingestor = URLhausIngestor()
 
         raw = {
@@ -326,26 +241,18 @@ class TestURLhausIngestor:
         assert result == []
 
     def test_parse_empty_urls_returns_empty_list(self):
-        """parse() must handle an empty URL list."""
         ingestor = URLhausIngestor()
         result = ingestor.parse({"urls": []})
         assert result == []
 
-
-# ---------------------------------------------------------------------------
-# 5. PhishTank Ingestor
-# ---------------------------------------------------------------------------
-
 class TestPhishTankIngestor:
 
     def test_initialization(self):
-        """PhishTank is a public feed — api_key defaults to None."""
         ingestor = PhishTankIngestor()
         assert ingestor.api_key is None
         assert ingestor.feed_name == "PhishTank"
 
     def test_parse_returns_normalized_list(self):
-        """parse() must extract phishing URLs into normalized threat dicts."""
         ingestor = PhishTankIngestor()
 
         raw = [
@@ -363,10 +270,6 @@ class TestPhishTankIngestor:
         assert result[0]["source"] == "PhishTank"
 
     def test_parse_excludes_unverified_entries(self):
-        """
-        parse() should only return verified phishing entries.
-        Unverified entries are community-submitted and unconfirmed.
-        """
         ingestor = PhishTankIngestor()
 
         raw = [
@@ -381,30 +284,19 @@ class TestPhishTankIngestor:
         assert result == []
 
     def test_parse_empty_list_returns_empty_list(self):
-        """parse() must handle an empty feed response."""
         ingestor = PhishTankIngestor()
         result = ingestor.parse([])
         assert result == []
 
-
-# ---------------------------------------------------------------------------
-# 6. Blocklist.de Ingestor
-# ---------------------------------------------------------------------------
-
 class TestBlocklistDeIngestor:
 
     def test_initialization(self):
-        """Blocklist.de is a public feed — no API key required."""
         ingestor = BlocklistDeIngestor()
         assert ingestor.api_key is None
         assert ingestor.feed_name == "Blocklist.de"
         assert "blocklist.de" in ingestor.base_url
 
     def test_parse_returns_normalized_list(self):
-        """
-        Blocklist.de returns plain-text newline-separated IPs.
-        parse() must split and normalize each line into a threat dict.
-        """
         ingestor = BlocklistDeIngestor()
 
         raw = "185.220.101.1\n185.220.101.2\n185.220.101.3\n"
@@ -416,10 +308,6 @@ class TestBlocklistDeIngestor:
         assert result[0]["source"] == "Blocklist.de"
 
     def test_parse_ignores_comment_lines(self):
-        """
-        Blocklist.de plaintext feeds often include comment lines starting with '#'.
-        parse() must skip these lines.
-        """
         ingestor = BlocklistDeIngestor()
 
         raw = "# This is a comment\n185.220.101.1\n# Another comment\n185.220.101.2\n"
@@ -430,31 +318,20 @@ class TestBlocklistDeIngestor:
             assert not item["indicator"].startswith("#")
 
     def test_parse_empty_string_returns_empty_list(self):
-        """parse() must handle an empty plaintext response."""
         ingestor = BlocklistDeIngestor()
         result = ingestor.parse("")
         assert result == []
 
     def test_parse_strips_whitespace_from_ips(self):
-        """parse() must strip leading/trailing whitespace from each IP line."""
         ingestor = BlocklistDeIngestor()
         raw = "  185.220.101.1  \n  185.220.101.2  \n"
         result = ingestor.parse(raw)
         assert result[0]["indicator"] == "185.220.101.1"
         assert result[1]["indicator"] == "185.220.101.2"
 
-
-# ---------------------------------------------------------------------------
-# 7. Cross-feed consistency
-# ---------------------------------------------------------------------------
-
 class TestCrossFeedConsistency:
 
     def test_all_ingestors_share_common_interface(self):
-        """
-        Every ingestor must expose feed_name, base_url, and api_key.
-        This ensures the pipeline can treat all feeds polymorphically.
-        """
         ingestors = [
             AbuseIPIngestor(api_key="k"),
             AlienVaultIngestor(api_key="k"),
@@ -471,19 +348,16 @@ class TestCrossFeedConsistency:
             assert hasattr(ingestor, "parse"), f"{type(ingestor).__name__} missing parse()"
 
     def test_all_ingestors_are_subclasses_of_base(self):
-        """Every concrete ingestor must be a subclass of BaseIngestor."""
         for cls in [AbuseIPIngestor, AlienVaultIngestor, URLhausIngestor,
                     PhishTankIngestor, BlocklistDeIngestor]:
             assert issubclass(cls, BaseIngestor), f"{cls.__name__} must extend BaseIngestor"
 
     def test_public_feeds_have_none_api_key(self):
-        """Public feeds (URLhaus, PhishTank, Blocklist.de) must default api_key to None."""
         public_feeds = [URLhausIngestor(), PhishTankIngestor(), BlocklistDeIngestor()]
         for ingestor in public_feeds:
             assert ingestor.api_key is None, f"{ingestor.feed_name} should have api_key=None"
 
     def test_authenticated_feeds_store_api_key(self):
-        """Authenticated feeds (AbuseIPDB, AlienVault) must store the provided key."""
         authenticated_feeds = [
             AbuseIPIngestor(api_key="key_a"),
             AlienVaultIngestor(api_key="key_b"),
